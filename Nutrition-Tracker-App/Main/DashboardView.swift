@@ -5,29 +5,71 @@
 //  Created by Hoi Mau Tan on 9/22/25.
 //
 import SwiftUI
+import SwiftData
 
 struct DashboardView: View {
-    // These would be @State properties updated as the user logs food.
-    @State private var caloriesLogged: Double = 550 // Example
-    @State private var targetCalories: Double = 2100
+    @Environment(\.modelContext) private var modelContext
+    
+    // 1. CALCULATE the date range before the query
+    private static let startOfToday = Calendar.current.startOfDay(for: .now)
+    private static let startOfTomorrow = Calendar.current.date(byAdding: .day, value: 1, to: startOfToday)!
 
-    // Calculated remaining calories
+    // 2. USE the constants in a single-line predicate
+    @Query(filter: #Predicate<FoodLogItem> {
+        $0.timestamp >= startOfToday && $0.timestamp < startOfTomorrow
+    }, sort: \.timestamp, order: .reverse)
+    private var todaysLog: [FoodLogItem]
+    
+    // --- Calculated Properties based on the Query ---
+
+    @Query var profiles: [UserProfile]
+    
+    private var userProfile: UserProfile? {
+        profiles.first
+    }
+
+    private var caloriesLogged: Double {
+        todaysLog.reduce(0) { $0 + Double($1.calories) }
+    }
+    
+    private var proteinLogged: Double {
+        todaysLog.reduce(0) { $0 + Double($1.protein) }
+    }
+    
+    private var carbsLogged: Double {
+        todaysLog.reduce(0) { $0 + Double($1.carbs) }
+    }
+
+    private var fatsLogged: Double {
+        todaysLog.reduce(0) { $0 + Double($1.fat) }
+    }
     var caloriesLeft: Int {
         Int(targetCalories - caloriesLogged)
     }
     
     // Progress for calories (0.0 to 1.0)
     var calorieProgress: Double {
-        caloriesLogged / targetCalories
+        // Ensure we don't divide by zero and cap the progress at 1.0
+        guard targetCalories > 0 else { return 0 }
+        return min(caloriesLogged / targetCalories, 1.0)
     }
     
-    // Example Macro Data
-    @State private var proteinLogged: Double = 60
-    @State private var proteinTarget: Double = 150
-    @State private var carbsLogged: Double = 80
-    @State private var carbsTarget: Double = 250
-    @State private var fatsLogged: Double = 30
-    @State private var fatsTarget: Double = 80
+    private var targetCalories: Double {
+        Double(userProfile?.recommendedCalories ?? 2100)
+    }
+    
+    private var proteinTarget: Double {
+        Double(userProfile?.proteinTarget ?? 150)
+    }
+    
+    private var carbsTarget: Double {
+        Double(userProfile?.carbsTarget ?? 250)
+    }
+
+    private var fatsTarget: Double {
+        Double(userProfile?.fatsTarget ?? 80)
+    }
+
 
     var body: some View {
         ZStack {
@@ -100,23 +142,24 @@ struct DashboardView: View {
                 .padding(.horizontal, 30)
                 .padding(.bottom, 20)
                 
-                // Food Log List - This will scroll
-                ScrollView {
-                    VStack {
-                        MealSectionView(mealType: "Breakfast", foodItems: [
-                            FoodLogItem(name: "Oatmeal with Berries", calories: 350, protein: 10, carbs: 50, fat: 5),
-                            FoodLogItem(name: "Coffee", calories: 10, protein: 0, carbs: 2, fat: 0)
-                        ])
-                        MealSectionView(mealType: "Lunch", foodItems: [
-                            FoodLogItem(name: "Grilled Chicken Salad", calories: 480, protein: 40, carbs: 20, fat: 25)
-                        ])
-                        MealSectionView(mealType: "Dinner", foodItems: [])
-                        MealSectionView(mealType: "Snacks", foodItems: [])
+                // Food Log List Container
+                VStack() {
+                    // Centered Header
+                    Text("Today's Log")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .padding(.top)
+
+                    // The Scrollable List
+                    ScrollView {
+                        // MealSectionView no longer needs the mealType
+                        MealSectionView(foodItems: todaysLog)
                     }
                 }
-                .background(Color.white) // White background for the scrollable list
-                .cornerRadius(30, corners: [.topLeft, .topRight]) // Rounded top corners
-                .edgesIgnoringSafeArea(.bottom) // Extend the white background to the very bottom
+                .frame(maxWidth: .infinity)
+                .background(Color.white)
+                .cornerRadius(30, corners: [.topLeft, .topRight])
+                .edgesIgnoringSafeArea(.bottom)
             }
         }
         .navigationBarHidden(true) // Hide default navigation bar to use our custom gradient top
@@ -139,71 +182,73 @@ struct RoundedCorner: Shape {
         return Path(path.cgPath)
     }
 }
-
-// Data model for food log item
-struct FoodLogItem: Identifiable {
-    let id = UUID()
-    let name: String
-    let calories: Int
-    let protein: Int
-    let carbs: Int
-    let fat: Int
-}
+// In DashboardView.swift
 
 // Reusable view for each meal section
 struct MealSectionView: View {
-    let mealType: String
+    @Environment(\.modelContext) private var modelContext
+    
+    // Remove the mealType property
+    // let mealType: String
+    
     let foodItems: [FoodLogItem]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
-            HStack {
-                Text(mealType)
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                Spacer()
-                Button(action: { /* Add food to this meal */ }) {
-                    Image(systemName: "plus.circle.fill")
-                        .foregroundColor(.accentColor)
-                        .font(.title3)
-                }
-            }
-            .padding(.horizontal)
-            .padding(.top)
             
             ForEach(foodItems) { item in
-                HStack {
-                    Image("food_placeholder") // You'll need actual food images
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .cornerRadius(8)
-                    VStack(alignment: .leading) {
-                        Text(item.name)
-                            .font(.subheadline)
-                            .lineLimit(1)
-                        Text("\(item.protein)g P / \(item.carbs)g C / \(item.fat)g F")
-                            .font(.caption)
-                            .foregroundColor(.gray)
+                FoodLogRow(item: item)
+                    .swipeActions {
+                        Button(role: .destructive) {
+                            deleteItem(item)
+                        } label: {
+                            Label("Delete", systemImage: "trash.fill")
+                        }
                     }
-                    Spacer()
-                    Text("\(item.calories) kcal")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                    Image(systemName: "plus.circle") // Add this item again button
-                        .foregroundColor(.accentColor)
-                }
-                .padding(.horizontal)
-                .padding(.vertical, 4)
-                Divider() // Separator line
             }
+            
             if foodItems.isEmpty {
-                Text("No items logged yet.")
+                Text("No items logged yet for today.")
                     .foregroundColor(.secondary)
-                    .padding(.horizontal)
-                    .padding(.bottom, 10)
+                    .padding()
             }
         }
-        .background(Color.white)
-        // No explicit corner radius here, as the ScrollView's background already handled it
+    }
+    
+    private func deleteItem(_ item: FoodLogItem) {
+        modelContext.delete(item)
+    }
+}
+
+// A new, reusable view for a single food log row
+struct FoodLogRow: View {
+    let item: FoodLogItem
+    
+    var body: some View {
+        VStack {
+            HStack {
+                // Placeholder image
+                Image(systemName: "fork.knife.circle.fill")
+                    .font(.largeTitle)
+                    .foregroundColor(.accentColor)
+                    .frame(width: 40, height: 40)
+                    
+                VStack(alignment: .leading) {
+                    Text(item.name)
+                        .font(.subheadline)
+                        .lineLimit(1)
+                    Text("\(item.protein)g Prot / \(item.carbs)g Carb / \(item.fat)g Fat")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+                Spacer()
+                Text("\(item.calories) kcal")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 4)
+            Divider()
+        }
     }
 }

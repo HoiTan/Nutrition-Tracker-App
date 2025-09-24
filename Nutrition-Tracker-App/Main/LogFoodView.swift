@@ -1,37 +1,29 @@
-//
-//  LogFoodView.swift
-//  Nutrition-Tracker-App
-//
-//  Created by Hoi Mau Tan on 9/22/25.
-//
-
 import SwiftUI
+import SwiftData
 
 struct LogFoodView: View {
+    @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) var dismiss
-    @State private var searchText = ""
-    @State private var selectedLogTab: Int = 0 // For the "Frequent", "My Meals", "My Foods" tabs
     
-    // Example food items for the tabs
-    let frequentFoods = [
-        FoodLogItem(name: "Grilled Chicken Salad", calories: 380, protein: 35, carbs: 15, fat: 20),
-        FoodLogItem(name: "Avocado Toast", calories: 280, protein: 10, carbs: 30, fat: 15),
-        FoodLogItem(name: "Protein Shake", calories: 180, protein: 25, carbs: 10, fat: 5)
-    ]
+    @State private var isCreatingFood = false
+    
+    @State private var searchText = ""
+    @State private var selectedLogTab: Int = 0
+    
+    // 1. ADD THIS QUERY to fetch food history, sorted by most recent
+    @Query(sort: \FoodLogItem.timestamp, order: .reverse) private var foodLogHistory: [FoodLogItem]
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 20) {
-                // Scan Meal with Camera button
+            VStack(spacing: 15) {
                 Button(action: { /* TODO: Implement AI Camera Scan */ }) {
                     Label("Scan Meal with Camera", systemImage: "camera.viewfinder")
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(GradientButtonStyle()) // Apply gradient style
+                .buttonStyle(GradientButtonStyle())
                 .padding(.horizontal)
-
-                // Search Bar
+                
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
@@ -41,10 +33,9 @@ struct LogFoodView: View {
                 .background(Color(.systemGray6))
                 .cornerRadius(10)
                 .padding(.horizontal)
-
-                // Scan a Barcode button
-                Button(action: { /* TODO: Implement Barcode Scan */ }) {
-                    Label("Scan a Barcode", systemImage: "barcode.viewfinder")
+                
+                Button(action: { isCreatingFood = true }) {
+                    Label("Create a Custom Food", systemImage: "square.and.pencil")
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -54,9 +45,9 @@ struct LogFoodView: View {
                 .foregroundColor(.black)
                 .padding(.horizontal)
                 
-                // Saved Foods Tabs (Segmented Picker acting as tabs)
+                // Saved Foods Tabs
                 Picker("", selection: $selectedLogTab) {
-                    Text("Frequent").tag(0)
+                    Text("Recents").tag(0) // Renamed for clarity
                     Text("My Meals").tag(1)
                     Text("My Foods").tag(2)
                 }
@@ -65,12 +56,14 @@ struct LogFoodView: View {
                 
                 // Content for the selected tab
                 List {
-                    ForEach(frequentFoods) { item in
+                    // 2. UPDATE ForEach to use the new 'foodLogHistory' query
+                    ForEach(foodLogHistory) { item in
                         HStack {
-                            Image("food_placeholder") // You'll need actual food images
-                                .resizable()
+                            Image(systemName: "fork.knife.circle.fill")
+                                .font(.title)
                                 .frame(width: 40, height: 40)
-                                .cornerRadius(8)
+                                .foregroundColor(.accentColor)
+                            
                             VStack(alignment: .leading) {
                                 Text(item.name)
                                     .font(.subheadline)
@@ -80,7 +73,11 @@ struct LogFoodView: View {
                                     .foregroundColor(.gray)
                             }
                             Spacer()
-                            Button(action: { /* Add this food to log */ }) {
+                            // 3. MAKE a functional button to re-log an item
+                            Button(action: {
+                                reLogItem(item)
+                                dismiss() // Close sheet after re-logging
+                            }) {
                                 Image(systemName: "plus.circle")
                                     .foregroundColor(.accentColor)
                                     .font(.title3)
@@ -88,19 +85,34 @@ struct LogFoodView: View {
                         }
                     }
                 }
-                .listStyle(.plain) // Remove default list styling
+                .listStyle(.plain)
                 
                 Spacer()
             }
             .navigationTitle("Log Food")
-            .navigationBarTitleDisplayMode(.inline) // Make title smaller
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
+                    Button("Cancel") { dismiss() }
                 }
             }
+            .sheet(isPresented: $isCreatingFood) {
+                CreateFoodView()
+            }
         }
+    }
+    
+    // 4. ADD this function to re-log a food item
+    private func reLogItem(_ item: FoodLogItem) {
+        // Create a new item with the same data but a new timestamp
+        let newItem = FoodLogItem(
+            name: item.name,
+            calories: item.calories,
+            protein: item.protein,
+            carbs: item.carbs,
+            fat: item.fat,
+            timestamp: .now // Set to the current time
+        )
+        modelContext.insert(newItem)
     }
 }

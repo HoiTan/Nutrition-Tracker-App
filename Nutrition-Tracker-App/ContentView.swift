@@ -6,23 +6,21 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
+    // This query automatically fetches UserProfile data from the database.
+    // The 'profiles' array will be empty if no profile has been saved yet.
+    @Query var profiles: [UserProfile]
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, from my first app!")
-                .font(.largeTitle) // Add this line
-                .foregroundStyle(.blue) // And this one
+        // If there is no profile saved, show the OnboardingView.
+        // Otherwise, show the MainTabView.
+        if profiles.isEmpty {
+            // Note: OnboardingView now manages its own state
+            OnboardingView()
+        } else {
+            MainTabView()
         }
-        .padding()
     }
-}
-
-
-
-#Preview {
-    ContentView()
 }

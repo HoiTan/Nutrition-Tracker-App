@@ -6,19 +6,22 @@
 //
 
 import SwiftUI
+import SwiftData
+import Observation
 
 struct OnboardingView: View {
-    @Binding var isOnboardingComplete: Bool
-    @State private var currentStep = 0
+    // Own the SwiftData model instance with @State (use @Bindable in children)
     @State private var userProfile = UserProfile()
+    
+    @State private var currentStep = 0
 
     var body: some View {
         TabView(selection: $currentStep) {
             WelcomeView(currentStep: $currentStep).tag(0)
-            PersonalDetailsView(userProfile: $userProfile, currentStep: $currentStep).tag(1)
-            ActivityLevelView(userProfile: $userProfile, currentStep: $currentStep).tag(2)
-            GoalView(userProfile: $userProfile, currentStep: $currentStep).tag(3)
-            SummaryView(userProfile: $userProfile, isOnboardingComplete: $isOnboardingComplete).tag(4)
+            PersonalDetailsView(userProfile: userProfile, currentStep: $currentStep).tag(1)
+            ActivityLevelView(userProfile: userProfile, currentStep: $currentStep).tag(2)
+            GoalView(userProfile: userProfile, currentStep: $currentStep).tag(3)
+            SummaryView(userProfile: userProfile).tag(4)
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
         .animation(.easeInOut, value: currentStep)
@@ -53,7 +56,7 @@ struct WelcomeView: View {
 
 // Screen 2: Personal Details
 struct PersonalDetailsView: View {
-    @Binding var userProfile: UserProfile
+    @Bindable var userProfile: UserProfile
     @Binding var currentStep: Int
     
     var body: some View {
@@ -99,7 +102,7 @@ struct PersonalDetailsView: View {
 
 // Screen 3: Activity Level
 struct ActivityLevelView: View {
-    @Binding var userProfile: UserProfile
+    @Bindable var userProfile: UserProfile
     @Binding var currentStep: Int
 
     var body: some View {
@@ -140,7 +143,7 @@ struct ActivityLevelView: View {
 
 // Screen 4: Define Your Goal
 struct GoalView: View {
-    @Binding var userProfile: UserProfile
+    @Bindable var userProfile: UserProfile
     @Binding var currentStep: Int
 
     var body: some View {
@@ -185,8 +188,10 @@ struct GoalView: View {
 
 // Screen 5: Summary & Calorie Target
 struct SummaryView: View {
-    @Binding var userProfile: UserProfile
-    @Binding var isOnboardingComplete: Bool
+    // Get access to the database context from the environment
+    @Environment(\.modelContext) private var modelContext
+    
+    @Bindable var userProfile: UserProfile
 
     var body: some View {
         ZStack {
@@ -219,13 +224,16 @@ struct SummaryView: View {
                 Spacer()
                 
                 Button("Let's Go!") {
-                    // TODO: Save userProfile to device storage (e.g., SwiftData, UserDefaults)
-                    isOnboardingComplete = true
+                    // Save userProfile to SwiftData
+                    saveProfile()
                 }
                 .buttonStyle(GradientButtonStyle())
                 .padding()
             }
             .foregroundColor(.white) // Apply to all text in the VStack
         }
+    }
+    private func saveProfile() {
+        modelContext.insert(userProfile)
     }
 }
