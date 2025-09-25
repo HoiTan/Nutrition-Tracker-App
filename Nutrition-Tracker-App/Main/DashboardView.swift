@@ -10,6 +10,8 @@ import SwiftData
 struct DashboardView: View {
     @Environment(\.modelContext) private var modelContext
     
+    @State private var itemToEdit: FoodLogItem?
+    
     // 1. CALCULATE the date range before the query
     private static let startOfToday = Calendar.current.startOfDay(for: .now)
     private static let startOfTomorrow = Calendar.current.date(byAdding: .day, value: 1, to: startOfToday)!
@@ -151,10 +153,23 @@ struct DashboardView: View {
                         .padding(.top)
 
                     // The Scrollable List
-                    ScrollView {
-                        // MealSectionView no longer needs the mealType
-                        MealSectionView(foodItems: todaysLog)
+                    List {
+                        ForEach(todaysLog) { item in
+                            FoodLogRow(item: item)
+                                .contentShape(Rectangle()) // Makes row tappable
+                                .onTapGesture {
+                                    itemToEdit = item // For editing
+                                }
+                                .swipeActions(allowsFullSwipe: false) { // Full swipe can feel accidental
+                                    Button(role: .destructive) {
+                                        deleteItem(item)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash.fill")
+                                    }
+                                }
+                        }
                     }
+                    .listStyle(.plain) // Makes the list look like a ScrollView
                 }
                 .frame(maxWidth: .infinity)
                 .background(Color.white)
@@ -163,6 +178,14 @@ struct DashboardView: View {
             }
         }
         .navigationBarHidden(true) // Hide default navigation bar to use our custom gradient top
+        .sheet(item: $itemToEdit) { item in
+            EditFoodView(item: item)
+        }
+    }
+    private func deleteItem(_ item: FoodLogItem) {
+        withAnimation {
+            modelContext.delete(item)
+        }
     }
 }
 
@@ -183,48 +206,48 @@ struct RoundedCorner: Shape {
     }
 }
 // In DashboardView.swift
-
-// Reusable view for each meal section
-struct MealSectionView: View {
-    @Environment(\.modelContext) private var modelContext
-    let foodItems: [FoodLogItem]
-    
-    @State private var itemToEdit: FoodLogItem?
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            
-            ForEach(foodItems) { item in
-                FoodLogRow(item: item)
-                    .contentShape(Rectangle()) // Makes the whole row tappable
-                    .onTapGesture {
-                        itemToEdit = item // Set the item to be edited
-                    }
-                    .swipeActions {
-                        Button(role: .destructive) {
-                            deleteItem(item)
-                        } label: {
-                            Label("Delete", systemImage: "trash.fill")
-                        }
-                    }
-            }
-            
-            if foodItems.isEmpty {
-                Text("No items logged yet for today.")
-                    .foregroundColor(.secondary)
-                    .padding()
-            }
-        }
-        // This sheet will present when 'itemToEdit' is not nil
-        .sheet(item: $itemToEdit) { item in
-            EditFoodView(item: item)
-        }
-    }
-    
-    private func deleteItem(_ item: FoodLogItem) {
-        modelContext.delete(item)
-    }
-}
+//
+//// Reusable view for each meal section
+//struct MealSectionView: View {
+//    @Environment(\.modelContext) private var modelContext
+//    let foodItems: [FoodLogItem]
+//    
+//    @State private var itemToEdit: FoodLogItem?
+//    
+//    var body: some View {
+//        VStack(alignment: .leading, spacing: 5) {
+//            
+//            ForEach(foodItems) { item in
+//                FoodLogRow(item: item)
+//                    .contentShape(Rectangle()) // Makes the whole row tappable
+//                    .onTapGesture {
+//                        itemToEdit = item // Set the item to be edited
+//                    }
+//                    .swipeActions {
+//                        Button(role: .destructive) {
+//                            deleteItem(item)
+//                        } label: {
+//                            Label("Delete", systemImage: "trash.fill")
+//                        }
+//                    }
+//            }
+//            
+//            if foodItems.isEmpty {
+//                Text("No items logged yet for today.")
+//                    .foregroundColor(.secondary)
+//                    .padding()
+//            }
+//        }
+//        // This sheet will present when 'itemToEdit' is not nil
+//        .sheet(item: $itemToEdit) { item in
+//            EditFoodView(item: item)
+//        }
+//    }
+//    
+//    private func deleteItem(_ item: FoodLogItem) {
+//        modelContext.delete(item)
+//    }
+//}
 
 // A new, reusable view for a single food log row
 struct FoodLogRow: View {
