@@ -4,6 +4,8 @@ import SwiftUI
 import SwiftData
 
 struct LogFoodView: View {
+    @EnvironmentObject var deepLinkManager: DeepLinkManager // Get the manager
+    
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) var dismiss
 
@@ -67,6 +69,14 @@ struct LogFoodView: View {
                 if let foodItem = geminiService.recognizedFood {
                     self.itemToCreate = foodItem
                 }
+            }
+        }
+        .onAppear {
+            print("✅ 5. LogFoodView: Appeared. Checking deep link: \(String(describing: deepLinkManager.pendingDeepLink))")
+            if deepLinkManager.pendingDeepLink == .scanMeal {
+                print("✅ 6. LogFoodView: Match found! Showing source options.")
+                isShowingSourceOptions = true
+                deepLinkManager.pendingDeepLink = nil
             }
         }
     }

@@ -10,6 +10,7 @@ import SwiftUI
 // MARK: - MainTabView
 
 struct MainTabView: View {
+    @EnvironmentObject var deepLinkManager: DeepLinkManager // Get the manager
     @State private var selectedTab: Tab = .today
     @State private var isLoggingFood = false // Controls the food logging modal
     
@@ -46,6 +47,15 @@ struct MainTabView: View {
         .sheet(isPresented: $isLoggingFood) {
             // This is the modal sheet for logging food
             LogFoodView()
+                .environmentObject(deepLinkManager)
+        }
+        // Listen for changes from the deep link manager
+        .onChange(of: deepLinkManager.pendingDeepLink) { _, newValue in
+            print("✅ 3. MainTabView: Detected deep link change. New value: \(String(describing: newValue))")
+            if newValue == .scanMeal {
+                print("✅ 4. MainTabView: Opening Log Food sheet.")
+                isLoggingFood = true
+            }
         }
     }
 }

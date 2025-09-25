@@ -9,11 +9,41 @@
 /* Begin PBXBuildFile section */
 		01C30B432E84FD5D00EE6A70 /* GoogleGenerativeAI in Frameworks */ = {isa = PBXBuildFile; productRef = 01C30B422E84FD5D00EE6A70 /* GoogleGenerativeAI */; };
 		01C30B4B2E85B1D400EE6A70 /* Keys.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 01C30B4A2E85B1D400EE6A70 /* Keys.xcconfig */; };
+		01C30B572E85E89100EE6A70 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01C30B562E85E89000EE6A70 /* WidgetKit.framework */; };
+		01C30B592E85E89100EE6A70 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01C30B582E85E89100EE6A70 /* SwiftUI.framework */; };
+		01C30B682E85E89300EE6A70 /* FoodLogWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 01C30B542E85E89000EE6A70 /* FoodLogWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		01C30B662E85E89300EE6A70 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01C30AE02E82107700EE6A70 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 01C30B532E85E89000EE6A70;
+			remoteInfo = FoodLogWidgetsExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		01C30B6D2E85E89300EE6A70 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				01C30B682E85E89300EE6A70 /* FoodLogWidgetsExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		01C30AE82E82107700EE6A70 /* Nutrition-Tracker-App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Nutrition-Tracker-App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		01C30B4A2E85B1D400EE6A70 /* Keys.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Keys.xcconfig; sourceTree = "<group>"; };
+		01C30B542E85E89000EE6A70 /* FoodLogWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FoodLogWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		01C30B562E85E89000EE6A70 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		01C30B582E85E89100EE6A70 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -24,6 +54,13 @@
 			);
 			target = 01C30AE72E82107700EE6A70 /* Nutrition-Tracker-App */;
 		};
+		01C30B6C2E85E89300EE6A70 /* Exceptions for "FoodLogWidgets" folder in "FoodLogWidgetsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 01C30B532E85E89000EE6A70 /* FoodLogWidgetsExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -33,6 +70,14 @@
 				01C30B4D2E85B9A400EE6A70 /* Exceptions for "Nutrition-Tracker-App" folder in "Nutrition-Tracker-App" target */,
 			);
 			path = "Nutrition-Tracker-App";
+			sourceTree = "<group>";
+		};
+		01C30B5A2E85E89100EE6A70 /* FoodLogWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				01C30B6C2E85E89300EE6A70 /* Exceptions for "FoodLogWidgets" folder in "FoodLogWidgetsExtension" target */,
+			);
+			path = FoodLogWidgets;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -46,6 +91,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		01C30B512E85E89000EE6A70 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				01C30B592E85E89100EE6A70 /* SwiftUI.framework in Frameworks */,
+				01C30B572E85E89100EE6A70 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -54,6 +108,8 @@
 			children = (
 				01C30B4A2E85B1D400EE6A70 /* Keys.xcconfig */,
 				01C30AEA2E82107700EE6A70 /* Nutrition-Tracker-App */,
+				01C30B5A2E85E89100EE6A70 /* FoodLogWidgets */,
+				01C30B552E85E89000EE6A70 /* Frameworks */,
 				01C30AE92E82107700EE6A70 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -62,8 +118,18 @@
 			isa = PBXGroup;
 			children = (
 				01C30AE82E82107700EE6A70 /* Nutrition-Tracker-App.app */,
+				01C30B542E85E89000EE6A70 /* FoodLogWidgetsExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		01C30B552E85E89000EE6A70 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				01C30B562E85E89000EE6A70 /* WidgetKit.framework */,
+				01C30B582E85E89100EE6A70 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -76,10 +142,12 @@
 				01C30AE42E82107700EE6A70 /* Sources */,
 				01C30AE52E82107700EE6A70 /* Frameworks */,
 				01C30AE62E82107700EE6A70 /* Resources */,
+				01C30B6D2E85E89300EE6A70 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				01C30B672E85E89300EE6A70 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				01C30AEA2E82107700EE6A70 /* Nutrition-Tracker-App */,
@@ -92,6 +160,28 @@
 			productReference = 01C30AE82E82107700EE6A70 /* Nutrition-Tracker-App.app */;
 			productType = "com.apple.product-type.application";
 		};
+		01C30B532E85E89000EE6A70 /* FoodLogWidgetsExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 01C30B692E85E89300EE6A70 /* Build configuration list for PBXNativeTarget "FoodLogWidgetsExtension" */;
+			buildPhases = (
+				01C30B502E85E89000EE6A70 /* Sources */,
+				01C30B512E85E89000EE6A70 /* Frameworks */,
+				01C30B522E85E89000EE6A70 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				01C30B5A2E85E89100EE6A70 /* FoodLogWidgets */,
+			);
+			name = FoodLogWidgetsExtension;
+			packageProductDependencies = (
+			);
+			productName = FoodLogWidgetsExtension;
+			productReference = 01C30B542E85E89000EE6A70 /* FoodLogWidgetsExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -103,6 +193,9 @@
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					01C30AE72E82107700EE6A70 = {
+						CreatedOnToolsVersion = 26.0.1;
+					};
+					01C30B532E85E89000EE6A70 = {
 						CreatedOnToolsVersion = 26.0.1;
 					};
 				};
@@ -125,6 +218,7 @@
 			projectRoot = "";
 			targets = (
 				01C30AE72E82107700EE6A70 /* Nutrition-Tracker-App */,
+				01C30B532E85E89000EE6A70 /* FoodLogWidgetsExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -138,6 +232,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		01C30B522E85E89000EE6A70 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -148,7 +249,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		01C30B502E85E89000EE6A70 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		01C30B672E85E89300EE6A70 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 01C30B532E85E89000EE6A70 /* FoodLogWidgetsExtension */;
+			targetProxy = 01C30B662E85E89300EE6A70 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		01C30AF12E82107900EE6A70 /* Debug */ = {
@@ -344,6 +460,66 @@
 			};
 			name = Release;
 		};
+		01C30B6A2E85E89300EE6A70 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = N383Z297AS;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FoodLogWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FoodLogWidgets;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.JTHoi.Nutrition-Tracker-App.FoodLogWidgets";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		01C30B6B2E85E89300EE6A70 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = N383Z297AS;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FoodLogWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FoodLogWidgets;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.JTHoi.Nutrition-Tracker-App.FoodLogWidgets";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -361,6 +537,15 @@
 			buildConfigurations = (
 				01C30AF42E82107900EE6A70 /* Debug */,
 				01C30AF52E82107900EE6A70 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		01C30B692E85E89300EE6A70 /* Build configuration list for PBXNativeTarget "FoodLogWidgetsExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				01C30B6A2E85E89300EE6A70 /* Debug */,
+				01C30B6B2E85E89300EE6A70 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
