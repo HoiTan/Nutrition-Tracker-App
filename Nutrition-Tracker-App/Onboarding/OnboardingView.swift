@@ -234,6 +234,16 @@ struct SummaryView: View {
         }
     }
     private func saveProfile() {
+        // Ensure derived values are up-to-date
+        userProfile.recalculateMacroTargets()
+        
+        // Insert the in-memory model into SwiftData, then save.
         modelContext.insert(userProfile)
+        do {
+            try modelContext.save()
+            print("Profile saved successfully!")
+        } catch {
+            print("Failed to save profile: \(error.localizedDescription)")
+        }
     }
 }

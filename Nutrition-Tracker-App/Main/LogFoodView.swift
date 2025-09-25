@@ -6,6 +6,7 @@ struct LogFoodView: View {
     @Environment(\.dismiss) var dismiss
     
     @State private var isCreatingFood = false
+    @State private var itemToCreate: FoodLogItem?
     
     @State private var searchText = ""
     @State private var selectedLogTab: Int = 0
@@ -34,7 +35,9 @@ struct LogFoodView: View {
                 .cornerRadius(10)
                 .padding(.horizontal)
                 
-                Button(action: { isCreatingFood = true }) {
+                Button(action: {
+                    itemToCreate = FoodLogItem(name: "", calories: 0, protein: 0, carbs: 0, fat: 0, timestamp: .now)
+                }) {
                     Label("Create a Custom Food", systemImage: "square.and.pencil")
                         .font(.headline)
                         .frame(maxWidth: .infinity)
@@ -96,8 +99,13 @@ struct LogFoodView: View {
                     Button("Cancel") { dismiss() }
                 }
             }
-            .sheet(isPresented: $isCreatingFood) {
-                CreateFoodView()
+            .sheet(item: $itemToCreate) { item in
+                // When the sheet is presented, insert the new item into the context
+                // so that EditFoodView can modify it directly.
+                modelContext.insert(item)
+                
+                // Add "return" here to specify this is the View to display
+                return EditFoodView(item: item)
             }
         }
     }

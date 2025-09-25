@@ -29,19 +29,19 @@ struct DashboardView: View {
     }
 
     private var caloriesLogged: Double {
-        todaysLog.reduce(0) { $0 + Double($1.calories) }
+        todaysLog.reduce(0) { $0 + Double($1.totalCalories) }
     }
-    
+
     private var proteinLogged: Double {
-        todaysLog.reduce(0) { $0 + Double($1.protein) }
+        todaysLog.reduce(0) { $0 + Double($1.totalProtein) }
     }
-    
+
     private var carbsLogged: Double {
-        todaysLog.reduce(0) { $0 + Double($1.carbs) }
+        todaysLog.reduce(0) { $0 + Double($1.totalCarbs) }
     }
 
     private var fatsLogged: Double {
-        todaysLog.reduce(0) { $0 + Double($1.fat) }
+        todaysLog.reduce(0) { $0 + Double($1.totalFat) }
     }
     var caloriesLeft: Int {
         Int(targetCalories - caloriesLogged)
@@ -187,17 +187,19 @@ struct RoundedCorner: Shape {
 // Reusable view for each meal section
 struct MealSectionView: View {
     @Environment(\.modelContext) private var modelContext
-    
-    // Remove the mealType property
-    // let mealType: String
-    
     let foodItems: [FoodLogItem]
+    
+    @State private var itemToEdit: FoodLogItem?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
             
             ForEach(foodItems) { item in
                 FoodLogRow(item: item)
+                    .contentShape(Rectangle()) // Makes the whole row tappable
+                    .onTapGesture {
+                        itemToEdit = item // Set the item to be edited
+                    }
                     .swipeActions {
                         Button(role: .destructive) {
                             deleteItem(item)
@@ -212,6 +214,10 @@ struct MealSectionView: View {
                     .foregroundColor(.secondary)
                     .padding()
             }
+        }
+        // This sheet will present when 'itemToEdit' is not nil
+        .sheet(item: $itemToEdit) { item in
+            EditFoodView(item: item)
         }
     }
     
@@ -235,8 +241,10 @@ struct FoodLogRow: View {
                     
                 VStack(alignment: .leading) {
                     Text(item.name)
+                        .font(.headline)
+                    Text("\(item.servings, specifier: "%.2f") servings")
                         .font(.subheadline)
-                        .lineLimit(1)
+                        .foregroundColor(.secondary)
                     Text("\(item.protein)g Prot / \(item.carbs)g Carb / \(item.fat)g Fat")
                         .font(.caption)
                         .foregroundColor(.gray)
