@@ -29,17 +29,27 @@ struct SimpleEntry: TimelineEntry {
 // This is the SwiftUI view for the widget.
 struct FoodLogWidgetsEntryView : View {
     var entry: Provider.Entry
+    @Environment(\.widgetFamily) var family
 
+    @ViewBuilder
     var body: some View {
-        VStack(spacing: 10) {
+        switch family {
+        case .accessoryCircular:
+            // This is the view for the circular Lock Screen widget
             Image(systemName: "camera.viewfinder")
-                .font(.largeTitle)
-                .foregroundColor(.green)
-            Text("Scan Meal")
-                .font(.headline)
-                .foregroundColor(.secondary)
+                .font(.title3)
+        default:
+            // This is the view for the Home Screen widgets
+            VStack(spacing: 10) {
+                Image(systemName: "camera.viewfinder")
+                    .font(.largeTitle)
+                    .foregroundColor(.green)
+                Text("Scan Meal")
+                    .font(.headline)
+                    .foregroundColor(.secondary)
+            }
+            .padding()
         }
-        .padding()
     }
 }
 
@@ -57,6 +67,6 @@ struct FoodLogWidgets: Widget {
         }
         .configurationDisplayName("Quick Scan")
         .description("Tap to open the camera and log your meal.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemSmall, .systemMedium, .accessoryCircular])
     }
 }
