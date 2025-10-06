@@ -19,8 +19,10 @@ enum ActivityLevel: String, Codable, CaseIterable, Identifiable {
 
 enum Goal: String, Codable, CaseIterable, Identifiable {
     case loseWeight = "Lose Weight"
+    case loseWeightMore = "Lose Weight (Aggressive)"
     case maintainWeight = "Maintain Weight"
     case gainWeight = "Gain Weight"
+    case gainWeightMore = "Gain Weight (Aggressive)"
     var id: Self { self }
 }
 
@@ -71,10 +73,14 @@ final class UserProfile {
         switch goal {
         case .loseWeight:
             return Int(tdee - 500)
+        case .loseWeightMore:
+            return Int(tdee - 1000)
         case .maintainWeight:
             return Int(tdee)
         case .gainWeight:
             return Int(tdee + 500)
+        case .gainWeightMore:
+            return Int(tdee + 1000)
         }
     }
     
